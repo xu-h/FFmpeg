@@ -136,7 +136,7 @@ static void parse_avs3_nal_units(AVCodecParserContext *s, const uint8_t *buf,
                 if (pic_code_type == 1 || pic_code_type == 3) {
                     s->pict_type = AV_PICTURE_TYPE_P;
                 } else {
-                    s->pict_type = AV_PICTURE_TYPE_B;
+                    // s->pict_type = AV_PICTURE_TYPE_B;
                 }
             }
         }
