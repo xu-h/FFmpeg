@@ -37,7 +37,7 @@
 #define AVS3_PROFILE_BASELINE_MAIN10 0x22
 
 #define AVS3_ISPIC(x) ((x) == AVS3_INTRA_PIC_START_CODE || (x) == AVS3_INTER_PIC_START_CODE)
-#define AVS3_ISUNIT(x) ((x) == AVS3_SEQ_START_CODE || AVS3_ISPIC(x))
+#define AVS3_ISUNIT(x) ((x) == AVS3_SEQ_START_CODE || (x) == AVS3_SEQ_END_CODE || (x) == AVS3_USER_DATA_START_CODE || AVS3_ISPIC(x))
 
 #include "libavutil/avutil.h"
 #include "libavutil/pixfmt.h"

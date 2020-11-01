@@ -25,6 +25,8 @@
 #include "get_bits.h"
 #include "parser.h"
 
+#define AVS3_SLICE_MAX_START_CODE 0x000001AF
+
 static int avs3_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size)
 {
     int pic_found  = pc->frame_start_found;
@@ -34,7 +36,7 @@ static int avs3_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_siz
     if (!pic_found) {
         for (; cur < buf_size; ++cur) {
             state = (state << 8) | buf[cur];
-            if (AVS3_ISPIC(buf[cur])){
+            if (AVS3_ISUNIT(buf[cur])){
                 cur++;
                 pic_found = 1;
                 break;
@@ -47,7 +49,7 @@ static int avs3_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_siz
             return END_NOT_FOUND;
         for (; cur < buf_size; ++cur) {
             state = (state << 8) | buf[cur];
-            if ((state & 0xFFFFFF00) == 0x100 && AVS3_ISUNIT(state & 0xFF)) {
+            if ((state & 0xFFFFFF00) == 0x100 && state > AVS3_SLICE_MAX_START_CODE) {
                 pc->frame_start_found = 0;
                 pc->state = -1;
                 return cur - 3;
@@ -136,7 +138,7 @@ static void parse_avs3_nal_units(AVCodecParserContext *s, const uint8_t *buf,
                 if (pic_code_type == 1 || pic_code_type == 3) {
                     s->pict_type = AV_PICTURE_TYPE_P;
                 } else {
-                    // s->pict_type = AV_PICTURE_TYPE_B;
+                    s->pict_type = AV_PICTURE_TYPE_B;
                 }
             }
         }
@@ -162,7 +164,7 @@ static int avs3_parse(AVCodecParserContext *s, AVCodecContext *avctx,
         }
     }
 
-    parse_avs3_nal_units(s, buf, buf_size, avctx);
+    // parse_avs3_nal_units(s, buf, buf_size, avctx);
 
     *poutbuf = buf;
     *poutbuf_size = buf_size;
